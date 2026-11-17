@@ -47,7 +47,7 @@ Usuários de demonstração (senha `acolhe123`):
 ## Testes
 
 ```bash
-vendor/bin/phpunit --testsuite unidade                 # 45 testes, sem banco
+vendor/bin/phpunit --testsuite unidade                 # 46 testes, sem banco
 ACOLHE_DB_DSN='mysql:host=127.0.0.1;dbname=acolhe_mais;charset=utf8mb4' \
   vendor/bin/phpunit --testsuite integracao            # 6 testes com o MySQL
 ```
