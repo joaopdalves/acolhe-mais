@@ -53,4 +53,17 @@ final class SituacaoTarefaTest extends TestCase
         self::assertSame(0, SituacaoTarefa::diasAtePrazo(new DateTimeImmutable('2026-11-16'), $hoje));
         self::assertSame(2, SituacaoTarefa::diasAtePrazo(new DateTimeImmutable('2026-11-18'), $hoje));
     }
+
+    public function testComparaSoAsDatasMesmoComFusosHorariosDiferentes(): void
+    {
+        // Prazo lido do banco (fuso padrão do PHP, UTC) e "agora" em São Paulo, de madrugada.
+        $prazo = new \DateTimeImmutable('2026-11-18', new \DateTimeZone('UTC'));
+        $hoje = new \DateTimeImmutable('2026-11-17 01:41', new \DateTimeZone('America/Sao_Paulo'));
+
+        self::assertSame(1, SituacaoTarefa::diasAtePrazo($prazo, $hoje));
+        self::assertSame(
+            SituacaoTarefa::PENDENTE,
+            SituacaoTarefa::situacao(false, new \DateTimeImmutable('2026-11-17', new \DateTimeZone('UTC')), $hoje, false)
+        );
+    }
 }

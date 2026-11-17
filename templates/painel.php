@@ -31,7 +31,7 @@ $filtros = ['todos' => 'Todos', 'atraso' => 'Com atraso', 'inativo' => 'Sem aces
         </div>
         <strong class="pct-num"><?= (int) $l['progresso'] ?>%</strong>
       </a>
-      <div class="barra"><span style="width: <?= max(3, (int) $l['progresso']) ?>%"></span></div>
+      <div class="barra"><span style="width: <?= (int) $l['progresso'] ?>%"></span></div>
     </li>
   <?php endforeach; ?>
   <?php if ($filtradas === []): ?><li class="cartao">Ninguém nesta situação.</li><?php endif; ?>

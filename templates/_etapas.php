@@ -4,7 +4,7 @@ $rotulos = [
     'CONCLUIDA' => 'Concluída',
     'ATRASADA' => 'Atrasada',
     'PENDENTE' => 'Pendente',
-    'AGUARDANDO_VALIDACAO' => 'Aguarda validação',
+    'AGUARDANDO_VALIDACAO' => 'Pendente, feita com o padrinho',
 ];
 $ehIntegrante = $usuario['perfil'] === 'INTEGRANTE';
 ?>
@@ -58,7 +58,7 @@ $ehIntegrante = $usuario['perfil'] === 'INTEGRANTE';
           <?php
           $pode = $t['situacao'] !== 'CONCLUIDA' && $podeAgir && (
               ($ehIntegrante && $t['responsavel_tipo'] === 'INTEGRANTE' && !$t['exige_validacao'])
-              || ($usuario['perfil'] === 'PADRINHO' && $t['exige_validacao'])
+              || ($usuario['perfil'] === 'PADRINHO' && $t['exige_validacao'] && $etapa['liberada'])
               || (in_array($usuario['perfil'], ['COORDENADOR', 'ADMINISTRADOR'], true))
           );
           ?>

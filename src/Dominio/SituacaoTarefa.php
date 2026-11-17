@@ -37,7 +37,7 @@ final class SituacaoTarefa
         if ($concluida) {
             return self::CONCLUIDA;
         }
-        if ($dataPrazo->setTime(0, 0) < $hoje->setTime(0, 0)) {
+        if (self::diasAtePrazo($dataPrazo, $hoje) < 0) {
             return self::ATRASADA;
         }
         return $exigeValidacao ? self::AGUARDANDO_VALIDACAO : self::PENDENTE;
@@ -46,7 +46,14 @@ final class SituacaoTarefa
     /** Dias até o prazo (negativo = já venceu). */
     public static function diasAtePrazo(DateTimeImmutable $dataPrazo, DateTimeImmutable $hoje): int
     {
-        $diff = $hoje->setTime(0, 0)->diff($dataPrazo->setTime(0, 0));
+        // Compara só o dia do calendário de cada data, ignorando hora e fuso,
+        // para que um prazo lido do banco não "vença" por diferença de fuso.
+        $diff = self::dia($hoje)->diff(self::dia($dataPrazo));
         return $diff->invert ? -$diff->days : $diff->days;
+    }
+
+    private static function dia(DateTimeImmutable $data): DateTimeImmutable
+    {
+        return new DateTimeImmutable($data->format('Y-m-d'), new \DateTimeZone('UTC'));
     }
 }
