@@ -1,0 +1,25 @@
+{
+    "name": "grupo1-fatec/acolhe-mais",
+    "description": "Acolhe+: plataforma web de integração de novos voluntários e colaboradores em ONGs (ES III – Fatec Itapetininga)",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": { "Acolhe\\": "src/" },
+        "files": ["src/Http/funcoes.php"]
+    },
+    "autoload-dev": {
+        "psr-4": { "Acolhe\\Testes\\": "tests/" }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test:unit": "phpunit --testsuite unidade"
+    }
+}
