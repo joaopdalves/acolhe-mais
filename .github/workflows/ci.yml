@@ -1,0 +1,55 @@
+# Integração contínua do Acolhe+: a cada push e pull request,
+# verifica a sintaxe, roda os testes de unidade e os de integração com MySQL 8.
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    env:
+      ACOLHE_DB_DSN: mysql:host=127.0.0.1;port=3306;dbname=acolhe_mais;charset=utf8mb4
+      ACOLHE_DB_USER: root
+      ACOLHE_DB_PASS: root
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_mysql, mbstring
+          coverage: pcov
+
+      - name: Dependências
+        run: composer install --no-interaction --no-progress
+
+      - name: Verificar sintaxe
+        run: find src public templates tests -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Criar banco (estrutura + ajustes do MVP + dados de demonstração)
+        run: |
+          for f in database/01_schema.sql database/02_mvp.sql database/03_seed.sql; do
+            mysql --default-character-set=utf8mb4 -h127.0.0.1 -uroot -proot < "$f"
+          done
+
+      - name: Testes de unidade (com cobertura)
+        run: vendor/bin/phpunit --testsuite unidade --coverage-text
+
+      - name: Testes de integração com MySQL
+        run: vendor/bin/phpunit --testsuite integracao
