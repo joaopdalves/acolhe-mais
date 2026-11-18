@@ -53,3 +53,24 @@ jobs:
 
       - name: Testes de integração com MySQL
         run: vendor/bin/phpunit --testsuite integracao
+
+  docker:
+    # Confere que o docker compose sobe o sistema do zero e que o login funciona.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Subir MySQL e aplicação
+        run: docker compose up -d --build
+
+      - name: Aguardar e testar o login do coordenador
+        run: |
+          for i in $(seq 1 60); do curl -fs -o /dev/null http://localhost:8000/index.php?r=login && break; sleep 3; done
+          T=$(curl -fs -c c.txt -b c.txt "http://localhost:8000/index.php?r=login" | grep -o 'name="csrf" value="[^"]*"' | sed 's/.*value="//;s/"//')
+          curl -fs -c c.txt -b c.txt -o /dev/null --data-urlencode "csrf=$T" -d "email=gustavo@ongesperanca.org&senha=acolhe123" "http://localhost:8000/index.php?r=login"
+          curl -fs -b c.txt "http://localhost:8000/index.php?r=painel" | tee painel.html | grep -q "Jailson Mendes"
+          grep -q "ONG Esperança" painel.html && echo "Painel carregado com acentuação correta"
+
+      - name: Logs em caso de falha
+        if: failure()
+        run: docker compose logs
