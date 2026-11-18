@@ -1,0 +1,35 @@
+# Sobe o Acolhe+ completo: MySQL 8 com os dados de demonstração e a aplicação em http://localhost:8000
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: acolhe_mais
+      MYSQL_USER: acolhe
+      MYSQL_PASSWORD: acolhe
+      TZ: America/Sao_Paulo
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    volumes:
+      # Os scripts 01_schema, 02_mvp e 03_seed rodam nessa ordem na primeira vez que o banco sobe.
+      - ./database:/docker-entrypoint-initdb.d:ro
+      - dados:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+  app:
+    build: .
+    environment:
+      ACOLHE_DB_DSN: "mysql:host=db;dbname=acolhe_mais;charset=utf8mb4"
+      ACOLHE_DB_USER: acolhe
+      ACOLHE_DB_PASS: acolhe
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dados:

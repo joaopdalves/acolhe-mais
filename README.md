@@ -23,7 +23,16 @@ Gustavo Henrique Mota Lima, João Pedro Domingues Alves e Matheus Silva Luna.
 Ficam para as próximas sprints: cadastro de conteúdos e trilhas pela tela, busca e perguntas frequentes (US09),
 lembretes por e-mail (US10), dúvidas ao padrinho e exportação de relatórios.
 
-## Como rodar
+## Rodar com um comando (Docker)
+
+O script instala o Docker se precisar, baixa este repositório, sobe o MySQL com os dados de demonstração e abre http://localhost:8000.
+
+- **Windows:** baixe `scripts/rodar-acolhe.bat` e `scripts/rodar-acolhe.ps1` para a mesma pasta e dê dois cliques no `.bat`.
+- **Linux/macOS:** `curl -fsSL https://raw.githubusercontent.com/joaopdalves/acolhe-mais/main/scripts/rodar-acolhe.sh | bash`
+
+Já com o repositório baixado e o Docker aberto, basta `docker compose up -d --build`. Para parar, `docker compose down`; para recriar os dados de demonstração, `docker compose down -v`.
+
+## Como rodar sem Docker
 
 Requisitos: PHP 8.2+ com `pdo_mysql` e `mbstring`, MySQL 8 e Composer.
 
